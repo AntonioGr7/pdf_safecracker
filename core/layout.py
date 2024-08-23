@@ -6,6 +6,8 @@ import os
 import yaml
 import torch
 import cv2
+from PIL import Image
+import numpy as np
 
 import torch
 
@@ -47,7 +49,7 @@ class PdfExtraction():
         return layout
 
     def extract_layout(self,image):
-        layout_res = self.layout_model(input_image, ignore_catids=[])
+        layout_res = self.layout_model(image, ignore_catids=[])
         return layout_res
     
     def extract(self,image,layout):
@@ -70,11 +72,12 @@ class PdfExtraction():
                         e['text'] = output
                 except Exception as e:
                     print("Something wrong with this element")
-        return elements
+        sorted_elements = self.sort(elements)
+        return sorted_elements
 
     
     def __crop(self,image,page_layout):
-        pil_img = Image.fromarray(cv2.cvtColor(input_image, cv2.COLOR_RGB2BGR))
+        pil_img = Image.fromarray(cv2.cvtColor(image, cv2.COLOR_RGB2BGR))
         cropped_images = []
         page = page_layout['layout_dets']
         for element in page:
@@ -84,3 +87,7 @@ class PdfExtraction():
             cropped = pil_img.convert("RGB").crop(crop_box)
             element['crop'] = cropped
         return page
+
+    def sort(self,elements):
+        sorted_elements = sorted(elements, key=lambda e: (e["poly"][1], e["poly"][0]))
+        return sorted_elements
