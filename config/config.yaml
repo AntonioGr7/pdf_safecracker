@@ -1,0 +1,8 @@
+device: "cuda"
+models:
+    layout:
+        weight_path: "models/Layout/model_final.pth"
+        config_path: "layoutlmv3/layoutlmv3_base_inference.yaml"
+    table_extraction:
+        max_new_tokens: 4096
+        max_time: 120 #Seconds
