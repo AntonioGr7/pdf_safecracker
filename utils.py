@@ -22,3 +22,31 @@ def load_pdf(pdf_path, dpi=72):
         images.append(np.array(image)[:,:,::-1])
     return images
 
+from pypandoc import convert_text
+
+def convert_latex(tables,output_format=["html","markdown"]):
+    outputs = {}
+    for i, latex_code in enumerate(tables):
+        for tgt_fmt in output_format:
+            tgt_code = convert_text(latex_code, tgt_fmt, format='latex') if tgt_fmt != 'latex' else latex_code
+            outputs[tgt_fmt]=tgt_code
+    return outputs
+
+import re
+def latex_rm_whitespace(s: str):
+    """Remove unnecessary whitespace from LaTeX code.
+    """
+    text_reg = r'(\\(operatorname|mathrm|text|mathbf)\s?\*? {.*?})'
+    letter = '[a-zA-Z]'
+    noletter = '[\W_^\d]'
+    names = [x[0].replace(' ', '') for x in re.findall(text_reg, s)]
+    s = re.sub(text_reg, lambda match: str(names.pop(0)), s)
+    news = s
+    while True:
+        s = news
+        news = re.sub(r'(?!\\ )(%s)\s+?(%s)' % (noletter, noletter), r'\1\2', s)
+        news = re.sub(r'(?!\\ )(%s)\s+?(%s)' % (noletter, letter), r'\1\2', news)
+        news = re.sub(r'(%s)\s+?(%s)' % (letter, noletter), r'\1\2', news)
+        if news == s:
+            break
+    return s
