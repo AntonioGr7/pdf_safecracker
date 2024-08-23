@@ -20,6 +20,12 @@ sudo apt-get install git-lfs
 git lfs install
 ```
 
+If you want to use the latex to markdown convertion functionality for tables you must also install pandoc
+
+```
+!sudo apt-get install texlive texlive-latex-extra pandoc
+```
+
 ## Downloading the Model
 
 To download the Layout Model open a terminal in the main folder and run 
